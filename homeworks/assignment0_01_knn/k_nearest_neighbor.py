@@ -1,7 +1,9 @@
 import numpy as np
+
 """
 Credits: the original code belongs to Stanford CS231n course assignment1. Source link: http://cs231n.github.io/assignments2019/assignment1/
 """
+
 
 class KNearestNeighbor:
     """ a kNN classifier with L2 distance """
