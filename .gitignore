@@ -110,3 +110,6 @@ venv.bak/
 *__solved*
 *__draft*
 testing/
+
+# JetBrains
+.idea/

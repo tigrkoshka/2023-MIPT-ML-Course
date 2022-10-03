@@ -76,6 +76,8 @@ class KNearestNeighbor:
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+                dists[i, j] = np.sqrt(((X[i] - self.X_train[j]) ** 2).sum())
+
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -97,6 +99,8 @@ class KNearestNeighbor:
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+
+            dists[i, :] = np.sqrt(((X[i] - self.X_train) ** 2).sum(axis=1))
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -125,6 +129,12 @@ class KNearestNeighbor:
         #       and two broadcast sums.                                         #
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+
+        test2 = (X ** 2).sum(axis=1).reshape(X.shape[0], 1)
+        train2 = (self.X_train ** 2).sum(axis=1).reshape(1, self.X_train.shape[0])
+        test_train = X.dot(self.X_train.T)
+
+        dists = np.sqrt(test2 + train2 - 2 * test_train)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -156,6 +166,8 @@ class KNearestNeighbor:
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+            closest_y = self.y_train[np.argsort(dists[i])[:k]]
+
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             #########################################################################
             # TODO:                                                                 #
@@ -166,6 +178,12 @@ class KNearestNeighbor:
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+            # counts for unique labels, sorted by the respective label
+            labels, counts = np.unique(closest_y, return_counts=True)
+            # if a tie occurs, the first occurrence in counts will be returned from np.argmax,
+            # therefore the smallest label with that number of occurrences will be chosen
+            # due to the sorting of the counts array (see comment above)
+            y_pred[i] = labels[np.argmax(counts)]
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
