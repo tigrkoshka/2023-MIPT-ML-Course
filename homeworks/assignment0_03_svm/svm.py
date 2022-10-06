@@ -17,7 +17,10 @@ def rbf(x_1, x_2, sigma=1.):
         kernel function values for all pairs of samples from x_1 and x_2
         torch.tensor of type torch.float32 shaped `(#samples_1, #samples_2)`
     '''
-    distances = ### YOUR CODE HERE
+    x_1_2 = (x_1 ** 2).sum(axis=1).reshape(x_1.shape[0], 1)
+    x_2_2 = (x_2 ** 2).sum(axis=1).reshape(1, x_2.shape[0])
+    x_1_x_2 = x_1 @ x_2.T
+    distances = torch.exp(-(x_1_2 + x_2_2 - 2 * x_1_x_2) / (2 * sigma ** 2))
     return torch.Tensor(distances).type(torch.float32)
 
 def hinge_loss(scores, labels):
@@ -25,7 +28,7 @@ def hinge_loss(scores, labels):
     '''
     assert len(scores.shape) == 1
     assert len(labels.shape) == 1
-    return ### YOUR CODE HERE
+    return torch.mean(torch.max(torch.zeros(scores.shape[0]), 1 - scores * labels))
 
 
 class SVM(BaseEstimator, ClassifierMixin):
@@ -40,7 +43,7 @@ class SVM(BaseEstimator, ClassifierMixin):
             kernel function values for all pairs of samples from x_1 and x_2
             torch.tensor shaped `(#samples_1, #samples_2)` of type torch.float32
         '''
-        return ### YOUR CODE HERE
+        return x_1 @ x_2.T
     
     def __init__(
         self,
@@ -82,8 +85,9 @@ class SVM(BaseEstimator, ClassifierMixin):
                 k_batch = K[batch_inds]
                 
                 optimizer.zero_grad()     # Manually zero the gradient buffers of the optimizer
-                
-                preds = ### YOUR CODE HERE # get the matrix product using SVM parameters: self.betas and self.bias
+
+                # get the matrix product using SVM parameters: self.betas and self.bias
+                preds = k_batch @ self.betas + self.bias
                 preds = preds.flatten()
                 loss = self.lmbd * self.betas[batch_inds].T @ k_batch @ self.betas + hinge_loss(preds, y_batch)
                 loss.backward()           # Backpropagation
@@ -102,7 +106,7 @@ class SVM(BaseEstimator, ClassifierMixin):
             batch = torch.from_numpy(batch).float()
             K = self.kernel_function(batch, self.X)
             # compute the margin values for every object in the batch
-            return ### YOUR CODE HERE
+            return (K @ self.betas + self.bias).flatten()
 
     def predict(self, batch):
         scores = self.predict_scores(batch)
