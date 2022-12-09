@@ -1,5 +1,11 @@
 import numpy as np
+<<<<<<< HEAD
 
+=======
+from collections import Counter
+
+from torch import dist
+>>>>>>> 0af341e (22f basic (#89))
 """
 Credits: the original code belongs to Stanford CS231n course assignment1. Source link: http://cs231n.github.io/assignments2019/assignment1/
 """
@@ -70,15 +76,20 @@ class KNearestNeighbor:
         dists = np.zeros((num_test, num_train))
         for i in range(num_test):
             for j in range(num_train):
+
                 #####################################################################
-                # TODO:                                                             #
+                # TO_DO:                                                             #
                 # Compute the l2 distance between the ith test point and the jth    #
                 # training point, and store the result in dists[i, j]. You should   #
                 # not use a loop over dimension, nor use np.linalg.norm().          #
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+<<<<<<< HEAD
                 dists[i, j] = np.sqrt(((X[i] - self.X_train[j]) ** 2).sum())
+=======
+                dists[i][j] =  np.sqrt(((X[i] - self.X_train[j])**2).sum())
+>>>>>>> 0af341e (22f basic (#89))
 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -95,15 +106,19 @@ class KNearestNeighbor:
         dists = np.zeros((num_test, num_train))
         for i in range(num_test):
             #######################################################################
-            # TODO:                                                               #
+            # TO_DO:                                                               #
             # Compute the l2 distance between the ith test point and all training #
             # points, and store the result in dists[i, :].                        #
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+<<<<<<< HEAD
 
             dists[i, :] = np.sqrt(((X[i] - self.X_train) ** 2).sum(axis=1))
 
+=======
+            dists[i, :] = np.sqrt(((np.tile(X[i], (num_train, 1)) - self.X_train)**2).sum(axis=1))
+>>>>>>> 0af341e (22f basic (#89))
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -132,11 +147,15 @@ class KNearestNeighbor:
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+<<<<<<< HEAD
         test2 = (X ** 2).sum(axis=1).reshape(X.shape[0], 1)
         train2 = (self.X_train ** 2).sum(axis=1).reshape(1, self.X_train.shape[0])
         test_train = X.dot(self.X_train.T)
 
         dists = np.sqrt(test2 + train2 - 2 * test_train)
+=======
+        dists = np.sqrt((X**2).sum(axis=1)[:, np.newaxis] + (self.X_train**2).sum(axis=1) - 2 * X.dot(self.X_train.T))
+>>>>>>> 0af341e (22f basic (#89))
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -180,6 +199,7 @@ class KNearestNeighbor:
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+<<<<<<< HEAD
             # counts for unique labels, sorted by the respective label
             labels, counts = np.unique(closest_y, return_counts=True)
             # if a tie occurs, the first occurrence in counts will be returned from np.argmax,
@@ -187,6 +207,12 @@ class KNearestNeighbor:
             # due to the sorting of the counts array (see comment above)
             y_pred[i] = labels[np.argmax(counts)]
 
+=======
+            argums = self.y_train[np.argsort(dists[i])[:k]]
+            elems, counts = np.unique(argums, return_counts=True)
+            closests_map = dict(zip(elems, counts))
+            y_pred[i] = sorted(closests_map.items(), key = lambda x : (-x[1], x[0]))[0][0]
+>>>>>>> 0af341e (22f basic (#89))
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
         return y_pred
